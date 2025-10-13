@@ -37,7 +37,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/js/**").addResourceLocations("/resources/js/");
         registry.addResourceHandler("/images/**").addResourceLocations("/resources/images/");
         registry.addResourceHandler("/client/**").addResourceLocations("/resources/client/");
-        registry.addResourceHandler("/file/**").addResourceLocations("/resources/file/"); // ✅ Thêm dòng này
+
+        // ✅ Trỏ đúng vào thư mục chứa file upload
+        registry.addResourceHandler("/file/**")
+                .addResourceLocations("file:src/main/webapp/resources/file/");
     }
 
     // ✅ Cấu hình để xử lý multipart/form-data (upload file)

@@ -61,25 +61,32 @@
                                             <div class="d-flex align-items-center justify-content-between mb-2">
                                                 <i class="fa fa-file-alt text-primary fa-2x"></i>
                                                 <small class="text-muted">
-                                                    <fmt:formatDate value="${doc.uploadDate}"
-                                                        pattern="dd/MM/yyyy HH:mm" />
+                                                    ${doc.formattedDate}
                                                 </small>
                                             </div>
+
                                             <h5 class="fw-bold mb-2 text-truncate">${doc.title}</h5>
                                             <p class="text-muted" style="font-size:14px; min-height: 40px;">
-                                                ${doc.description}</p>
-                                            <p style="font-size:13px;">Người đăng: <span
-                                                    class="fw-semibold">${doc.uploader.firstName}
-                                                    ${doc.uploader.lastName}</span></p>
+                                                ${doc.description}
+                                            </p>
+
+                                            <p style="font-size:13px;">Người đăng:
+                                                <span class="fw-semibold">
+                                                    ${doc.uploader.firstName} ${doc.uploader.lastName}
+                                                </span>
+                                            </p>
+
                                             <div class="d-flex justify-content-between mt-3">
-                                                <a href="/uploads/${doc.fileName}"
-                                                    class="btn btn-outline-primary rounded-pill px-3" download>
+                                                <a href="/document/download/${doc.id}"
+                                                    class="btn btn-outline-primary rounded-pill px-3">
                                                     <i class="fa fa-download me-2"></i>Tải về
                                                 </a>
+
                                                 <a href="/document/${doc.id}"
                                                     class="btn btn-outline-secondary rounded-pill px-3">
                                                     <i class="fa fa-eye me-2"></i>Xem chi tiết
                                                 </a>
+
                                             </div>
                                         </div>
                                     </div>
@@ -88,6 +95,7 @@
                                 <c:if test="${empty documents}">
                                     <p class="text-center text-muted">Chưa có tài liệu nào được tải lên.</p>
                                 </c:if>
+
                             </div>
                         </div>
                     </div>

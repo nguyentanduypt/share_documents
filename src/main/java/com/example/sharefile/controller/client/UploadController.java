@@ -7,15 +7,15 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.sharefile.domain.User;
-import com.example.sharefile.service.FileService;
-import com.example.sharefile.domain.File;
+import com.example.sharefile.service.DocumentService;
+import com.example.sharefile.domain.Document;
 
 @Controller
 @RequestMapping("/upload")
 public class UploadController {
 
     @Autowired
-    private FileService fileService;
+    private DocumentService documentService;
 
     @GetMapping
     public String showUploadForm() {
@@ -38,7 +38,7 @@ public class UploadController {
             // 🔹 Giả sử bạn chưa dùng login, ta tạo uploader tạm null
             User uploader = null;
 
-            File savedFile = fileService.saveFile(file, title, description, uploader);
+            Document savedFile = documentService.saveFile(file, title, description, uploader);
             model.addAttribute("message", "Tải file thành công!");
             model.addAttribute("fileName", savedFile.getFileName());
 

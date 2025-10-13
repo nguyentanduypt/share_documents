@@ -5,8 +5,8 @@ import java.time.LocalDateTime;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "files")
-public class File {
+@Table(name = "documents")
+public class Document {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,10 +22,30 @@ public class File {
 
     private LocalDateTime uploadDate;
 
-    // 👇 Thêm quan hệ ManyToOne với User
+    // Thêm quan hệ ManyToOne với User
     @ManyToOne
     @JoinColumn(name = "uploader_id") // cột trong database
     private User uploader;
+    private String filePath;
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    @Transient
+    private String formattedDate;
+
+    public String getFormattedDate() {
+        return formattedDate;
+    }
+
+    public void setFormattedDate(String formattedDate) {
+        this.formattedDate = formattedDate;
+    }
 
     // --- Getter & Setter ---
     public Long getId() {
