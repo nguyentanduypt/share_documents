@@ -7,7 +7,7 @@
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Trang chủ - ShareFile</title>
+                <title>Tài liệu của tôi - ShareFile</title>
 
                 <!-- Fonts & Icons -->
                 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,11 +27,16 @@
                 <link href="/client/css/bootstrap.min.css" rel="stylesheet">
                 <link href="/client/css/style.css" rel="stylesheet">
             </head>
+            <style>
+                body {
+                    padding-top: 90px;
+                }
+            </style>
 
             <body>
                 <!-- Spinner -->
                 <div id="spinner"
-                    class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50  d-flex align-items-center justify-content-center">
+                    class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50 d-flex align-items-center justify-content-center">
                     <div class="spinner-grow text-primary" role="status"></div>
                 </div>
 
@@ -39,60 +44,57 @@
                 <jsp:include page="../layout/header.jsp" />
 
                 <!-- Banner -->
-                <jsp:include page="../layout/banner.jsp" />
+                <div class="container-fluid bg-primary text-white py-5 text-center">
+                    <h1 class="display-5 fw-bold">Tài liệu của tôi</h1>
+                    <p class="mb-0">Quản lý, chỉnh sửa và tải xuống các tài liệu bạn đã chia sẻ</p>
+                </div>
 
-                <!-- Documents Section -->
+                <!-- My Documents Section -->
                 <div class="container-fluid py-5">
                     <div class="container py-5">
                         <div class="tab-class text-center">
                             <div class="row g-4 mb-4">
                                 <div class="col-lg-6 text-start">
-                                    <h1>Tài liệu mới nhất</h1>
+                                    <h1 class="fw-bold">Danh sách tài liệu của bạn</h1>
                                 </div>
                                 <div class="col-lg-6 text-end">
-                                    <a href="/upload" class="btn btn-primary rounded-pill px-4">Tải lên tài liệu</a>
+                                    <a href="/upload" class="btn btn-primary rounded-pill px-4">
+                                        <i class="fa fa-upload me-2"></i>Thêm tài liệu mới
+                                    </a>
                                 </div>
                             </div>
 
                             <!-- 🔹 Bộ lọc danh mục -->
-                            <form action="${pageContext.request.contextPath}/document/" method="get" class="mb-3">
-                                <div class="row">
+                            <form action="${pageContext.request.contextPath}/my-files" method="get" class="mb-3">
+                                <div class="row justify-content-center">
                                     <div class="col-md-4">
-                                        <select name="categoryId" class="form-select" onchange="this.form.submit()">
-                                            <option value="">-- Chọn danh mục --</option>
+                                        <!-- <select name="categoryId" class="form-select" onchange="this.form.submit()">
+                                            <option value="">-- Lọc theo danh mục --</option>
                                             <c:forEach var="cat" items="${categories}">
                                                 <option value="${cat.id}" ${cat.id==selectedCategoryId ? 'selected' : ''
                                                     }>
                                                     ${cat.nameCategory}
                                                 </option>
                                             </c:forEach>
-                                        </select>
+                                        </select> -->
                                     </div>
                                 </div>
                             </form>
-
 
                             <!-- 🔹 Danh sách tài liệu -->
                             <div class="row g-4 mt-4">
                                 <c:forEach var="doc" items="${documents}">
                                     <div class="col-md-6 col-lg-4 col-xl-3">
-                                        <div class="rounded border border-secondary p-3 shadow-sm h-100">
+                                        <div
+                                            class="rounded border border-secondary p-3 shadow-sm h-100 position-relative">
                                             <div class="d-flex align-items-center justify-content-between mb-2">
                                                 <i class="fa fa-file-alt text-primary fa-2x"></i>
-                                                <small class="text-muted">
-                                                    ${doc.formattedDate}
-                                                </small>
+                                                <small class="text-muted">${doc.formattedDate}</small>
                                             </div>
 
                                             <h5 class="fw-bold mb-2 text-truncate">${doc.title}</h5>
                                             <p class="text-muted" style="font-size:14px; min-height: 40px;">
                                                 ${doc.description}
-                                            </p>
-
-                                            <p style="font-size:13px;">Người đăng:
-                                                <span class="fw-semibold">
-                                                    ${doc.uploader.fullName}
-                                                </span>
                                             </p>
 
                                             <p style="font-size:13px;">Danh mục:
@@ -109,23 +111,29 @@
 
                                                 <a href="/document/${doc.id}"
                                                     class="btn btn-outline-secondary rounded-pill px-3">
-                                                    <i class="fa fa-eye me-2"></i>Xem chi tiết
+                                                    <i class="fa fa-eye me-2"></i>Xem
                                                 </a>
                                             </div>
+
+                                            <!-- Nút xóa ở góc -->
+                                            <form action="/document/delete/${doc.id}" method="post"
+                                                onsubmit="return confirm('Bạn có chắc muốn xóa tài liệu này?')">
+                                                <button type="submit"
+                                                    class="btn btn-sm btn-danger rounded-circle position-absolute top-0 end-0 mt-2 me-2">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </form>
                                         </div>
                                     </div>
                                 </c:forEach>
 
                                 <c:if test="${empty documents}">
-                                    <p class="text-center text-muted mt-4">Không có tài liệu trong danh mục này.</p>
+                                    <p class="text-center text-muted mt-4">Bạn chưa tải lên tài liệu nào.</p>
                                 </c:if>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Features -->
-                <jsp:include page="../layout/feature.jsp" />
 
                 <!-- Footer -->
                 <jsp:include page="../layout/footer.jsp" />

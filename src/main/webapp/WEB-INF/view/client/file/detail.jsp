@@ -74,7 +74,7 @@
                             <div class="rounded border border-secondary p-4 shadow-sm bg-white">
                                 <h4 class="fw-bold mb-3">${doc.title}</h4>
                                 <p><strong>Mô tả:</strong> ${doc.description}</p>
-                                <p><strong>Người đăng:</strong> ${doc.uploader.firstName} ${doc.uploader.lastName}</p>
+                                <p><strong>Người đăng:</strong> ${doc.uploader.fullName}</p>
                                 <p><strong>Ngày đăng:</strong> ${doc.uploadDate}</p>
 
                                 <div class="mt-4 d-flex gap-3">
@@ -93,17 +93,40 @@
                                     liệu</h5>
 
                                 <c:choose>
-                                    <c:when test="${not empty content}">
-                                        <div class="file-viewer">${content}</div>
+                                    <c:when test="${doc.fileName.endsWith('.pdf')}">
+                                        <iframe src="${fileUrl}" width="100%" height="600px"></iframe>
+                                    </c:when>
+
+                                    <c:when test="${doc.fileName.endsWith('.docx')}">
+                                        <div id="filePreview" class="file-viewer">Đang tải...</div>
+                                        <script
+                                            src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.7.0/mammoth.browser.min.js"></script>
+                                        <script>
+                                            fetch("${fileUrl}")
+                                                .then(r => r.arrayBuffer())
+                                                .then(d => mammoth.convertToHtml({ arrayBuffer: d }))
+                                                .then(res => document.getElementById("filePreview").innerHTML = res.value)
+                                                .catch(() => document.getElementById("filePreview").innerText = "Không thể xem trước file DOCX này.");
+                                        </script>
+                                    </c:when>
+
+                                    <c:when test="${doc.fileName.endsWith('.txt') || doc.fileName.endsWith('.csv')}">
+                                        <iframe src="${fileUrl}" width="100%" height="600px"></iframe>
+                                    </c:when>
+
+                                    <c:when
+                                        test="${doc.fileName.endsWith('.jpg') || doc.fileName.endsWith('.png') || doc.fileName.endsWith('.jpeg')}">
+                                        <img src="${fileUrl}" class="img-fluid rounded shadow-sm"
+                                            style="max-height:600px;">
                                     </c:when>
 
                                     <c:otherwise>
                                         <div class="alert alert-info text-center">
-                                            <i class="fa fa-info-circle me-2"></i>
-                                            Không thể hiển thị nội dung file này. Vui lòng tải về để xem chi tiết.
+                                            Không thể hiển thị loại file này. Vui lòng tải về để xem.
                                         </div>
                                     </c:otherwise>
                                 </c:choose>
+
                             </div>
                         </c:if>
 

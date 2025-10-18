@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.example.sharefile.domain.Role;
 import com.example.sharefile.domain.User;
 import com.example.sharefile.domain.dto.RegisterDTO;
+import com.example.sharefile.repository.DocumentRepository;
 import com.example.sharefile.repository.RoleRepository;
 import com.example.sharefile.repository.UserRepository;
 
@@ -14,10 +15,13 @@ import com.example.sharefile.repository.UserRepository;
 public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final DocumentRepository documentRepository;
 
-    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository,
+            DocumentRepository documentRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.documentRepository = documentRepository;
     }
 
     public List<User> getAllUsers() {
@@ -34,6 +38,14 @@ public class UserService {
         return savedUser;
     }
 
+    public long countUsers() {
+        return this.userRepository.count();
+    }
+
+    public long countDocuments() {
+        return this.documentRepository.count();
+    }
+
     public void deleteUserById(long id) {
         this.userRepository.deleteById(id);
     }
@@ -48,6 +60,10 @@ public class UserService {
 
     public User getUserByEmail(String email) {
         return this.userRepository.findByEmail(email);
+    }
+
+    public User findByUsername(String username) {
+        return userRepository.findByEmail(username);
     }
 
     public User registerDTOtoUser(RegisterDTO registerDTO) {

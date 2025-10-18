@@ -1,10 +1,9 @@
 package com.example.sharefile.controller.client;
 
+import com.example.sharefile.domain.Category;
 import com.example.sharefile.domain.Document;
+import com.example.sharefile.service.CategoryService;
 import com.example.sharefile.service.DocumentService;
-
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -14,49 +13,39 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import java.io.FileInputStream;
+import java.util.List;
 
 @Controller
+@RequestMapping("/document")
 public class DocumentController {
 
     @Autowired
     private DocumentService documentService;
+    @Autowired
+    private CategoryService categoryService;
 
     // ✅ Xem chi tiết tài liệu
-    @GetMapping("/document/{id}")
-    public String showDetail(@PathVariable Long id, Model model) throws IOException {
+    @GetMapping("/{id}")
+    public String showDetail(@PathVariable Long id, Model model) {
         Document doc = documentService.findById(id);
         if (doc == null) {
             return "redirect:/?error=notfound";
         }
+
+        // ✅ Tạo URL truy cập trực tiếp tới file
+        String fileUrl = "/file/" + doc.getFileName();
+
+        // ✅ Gửi dữ liệu sang JSP
         model.addAttribute("doc", doc);
+        model.addAttribute("fileUrl", fileUrl);
 
-        String content = "";
-        String filePath = doc.getFilePath();
-
-        if (filePath != null && (filePath.endsWith(".txt") || filePath.endsWith(".md") || filePath.endsWith(".csv"))) {
-            Path path = Paths.get(filePath);
-            if (Files.exists(path)) {
-                content = Files.readString(path);
-            } else {
-                content = "⚠️ File không tồn tại trong hệ thống.";
-            }
-        } else {
-            content = "⚠️ Không có nội dung hoặc định dạng file không hỗ trợ hiển thị.";
-        }
-
-        model.addAttribute("content", content);
         return "client/file/detail";
     }
 
-    // ✅ 2. Tải file về
+    // ✅ Tải file về
     @GetMapping("/download/{id}")
     public ResponseEntity<Resource> downloadFile(@PathVariable("id") Long id) {
         try {
@@ -66,12 +55,11 @@ public class DocumentController {
             }
 
             Path filePath = Paths.get("src/main/webapp/resources/file/" + doc.getFileName());
-            Resource resource = new UrlResource(filePath.toUri());
-
-            if (!resource.exists()) {
+            if (!Files.exists(filePath)) {
                 return ResponseEntity.notFound().build();
             }
 
+            Resource resource = new UrlResource(filePath.toUri());
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION,
                             "attachment; filename=\"" + resource.getFilename() + "\"")
@@ -82,4 +70,22 @@ public class DocumentController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @GetMapping("/")
+    public String showHomePage(@RequestParam(required = false) Long categoryId, Model model) {
+        List<Category> categories = categoryService.getAllCategories();
+
+        List<Document> documents;
+        if (categoryId != null) {
+            documents = documentService.findByCategoryId(categoryId);
+        } else {
+            documents = documentService.getAllFiles();
+        }
+
+        model.addAttribute("categories", categories);
+        model.addAttribute("documents", documents);
+        model.addAttribute("selectedCategoryId", categoryId);
+        return "client/homepage/show";
+    }
+
 }

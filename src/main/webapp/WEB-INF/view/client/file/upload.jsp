@@ -29,6 +29,42 @@
                 <!-- Custom CSS -->
                 <link href="${pageContext.request.contextPath}/client/css/bootstrap.min.css" rel="stylesheet">
                 <link href="${pageContext.request.contextPath}/client/css/style.css" rel="stylesheet">
+                <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.7.0/mammoth.browser.min.js"></script>
+                <script>
+                    $(document).ready(function () {
+                        const fileInput = $("#fileData");
+                        fileInput.change(function (e) {
+                            const file = e.target.files[0];
+                            const preview = $("#filePreview");
+                            if (!file) {
+                                preview.text("");
+                                return;
+                            }
+                            if (file.type.startsWith("text/")) {
+                                const reader = new FileReader();
+                                reader.onload = function (event) {
+                                    preview.text(event.target.result);
+                                };
+                                reader.readAsText(file);
+                            } else if (file.name.endsWith(".docx")) {
+                                const reader = new FileReader();
+                                reader.onload = function (event) {
+                                    mammoth.convertToHtml({ arrayBuffer: event.target.result })
+                                        .then(function (resultObject) {
+                                            preview.html(resultObject.value);
+                                        })
+                                        .catch(function () {
+                                            preview.text("Không thể xem trước file docx này.");
+                                        });
+                                };
+                                reader.readAsArrayBuffer(file);
+                            } else {
+                                preview.text("Xem trước chỉ hỗ trợ file .txt, .md, .csv, .docx");
+                            }
+                        });
+                    });
+                </script>
             </head>
 
             <body>
@@ -56,13 +92,26 @@
                                 placeholder="Mô tả ngắn về tài liệu (ví dụ: bài giảng, đề thi, đồ án...)"
                                 rows="3"></textarea>
                         </div>
-
+                        <div class="mb-3">
+                            <label for="category">Danh mục:</label>
+                            <select name="categoryId" class="form-select" required>
+                                <option value="">-- Chọn danh mục --</option>
+                                <c:forEach var="cat" items="${categories}">
+                                    <option value="${cat.id}">${cat.nameCategory}</option>
+                                </c:forEach>
+                            </select>
+                        </div>
                         <div class="mb-3">
                             <label for="fileData" class="form-label fw-bold">Chọn file</label>
                             <input type="file" class="form-control" id="fileData" name="fileData" required>
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100">Tải lên</button>
+                        <div class="mb-3">
+                            <label>Xem trước nội dung (nếu là file văn bản):</label>
+                            <pre id="filePreview"
+                                style="white-space: pre-wrap; border: 1px solid #ccc; padding: 10px; height: 500px; overflow:auto;"></pre>
+                        </div>
                     </form>
 
                 </div>

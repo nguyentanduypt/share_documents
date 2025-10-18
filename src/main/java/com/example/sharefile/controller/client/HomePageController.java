@@ -18,19 +18,24 @@ import com.example.sharefile.domain.User;
 import com.example.sharefile.domain.dto.RegisterDTO;
 import com.example.sharefile.service.DocumentService;
 import com.example.sharefile.service.UserService;
+import com.example.sharefile.service.CategoryService;
+import com.example.sharefile.domain.Category;
 
 @Controller
 public class HomePageController {
 
     private final DocumentService fileService;
     private final UserService userService;
+    private final CategoryService categoryService;
     private final PasswordEncoder passwordEncoder;
 
     public HomePageController(DocumentService fileService,
             UserService userService,
+            CategoryService categoryService,
             PasswordEncoder passwordEncoder) {
         this.fileService = fileService;
         this.userService = userService;
+        this.categoryService = categoryService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -38,6 +43,7 @@ public class HomePageController {
     @GetMapping("/")
     public String getHomePage(Model model) {
         List<Document> documents = fileService.getAllFiles();
+        List<Category> categories = categoryService.getAllCategories();
 
         // Format ngày upload cho đẹp
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -48,6 +54,7 @@ public class HomePageController {
         });
 
         model.addAttribute("documents", documents);
+        model.addAttribute("categories", categories);
         return "client/homepage/show";
     }
 
@@ -89,15 +96,21 @@ public class HomePageController {
         return "redirect:/login";
     }
 
-    // 🔐 Trang đăng nhập client
+    // Trang đăng nhập client
     @GetMapping("/login")
     public String getLoginPage() {
         return "client/auth/login";
     }
 
-    // 🚫 Trang lỗi truy cập client
+    // Trang lỗi truy cập client
     @GetMapping("/access-denied")
     public String getAccessDeniedPage() {
         return "client/auth/access-denied";
     }
+
+    @GetMapping("/about")
+    public String about() {
+        return "client/homepage/about";
+    }
+
 }

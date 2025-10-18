@@ -16,7 +16,7 @@
                     <div class="collapse navbar-collapse" id="navbarCollapse">
                         <div class="navbar-nav mx-auto">
                             <a href="/" class="nav-item nav-link active">Trang chủ</a>
-                            <a href="/documents" class="nav-item nav-link">Tài liệu</a>
+                            <!-- <a href="/documents" class="nav-item nav-link">Tài liệu</a> -->
                             <a href="/upload" class="nav-item nav-link">Tải lên</a>
                             <a href="/about" class="nav-item nav-link">Giới thiệu</a>
                         </div>
@@ -38,6 +38,9 @@
                                     </li>
                                     <li><a class="dropdown-item" href="/profile">Hồ sơ cá nhân</a></li>
                                     <li><a class="dropdown-item" href="/my-files">Tài liệu của tôi</a></li>
+                                    <c:if test="${pageContext.request.isUserInRole('ADMIN')}">
+                                        <li><a class="dropdown-item" href="/admin">Trang quản trị</a></li>
+                                    </c:if>
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
