@@ -1,0 +1,140 @@
+
+
+-- Table for areas (e.g., geographic or size-based areas)
+CREATE TABLE `areas` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `code` VARCHAR(255) DEFAULT NULL,
+  `value` VARCHAR(255) DEFAULT NULL,
+  `createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_areas_code` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Table for attributes (e.g., price and acreage details for posts)
+CREATE TABLE `attributes` (
+  `id` VARCHAR(255) NOT NULL,
+  `price` DECIMAL(15,2) DEFAULT NULL, -- Changed to DECIMAL for numerical operations
+  `acreage` DECIMAL(10,2) DEFAULT NULL, -- Changed to DECIMAL for numerical operations
+  `createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Table for categories (e.g., post types like Apartment, House)
+CREATE TABLE `categories` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `code` VARCHAR(255) DEFAULT NULL,
+  `value` VARCHAR(255) DEFAULT NULL,
+  `header` VARCHAR(255) DEFAULT NULL,
+  `subheader` VARCHAR(255) DEFAULT NULL,
+  `createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_categories_code` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Table for images (e.g., image URLs or paths for posts)
+CREATE TABLE `images` (
+  `id` VARCHAR(255) NOT NULL,
+  `image` LONGTEXT DEFAULT NULL, -- Consider storing URLs/paths instead of base64
+  `createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Table for labels (e.g., tags or statuses for posts)
+CREATE TABLE `labels` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `code` VARCHAR(255) DEFAULT NULL,
+  `value` VARCHAR(255) DEFAULT NULL,
+  `createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_labels_code` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Table for overviews (summary information for posts)
+CREATE TABLE `overviews` (
+  `id` VARCHAR(255) NOT NULL,
+  `area` VARCHAR(255) DEFAULT NULL,
+  `type` VARCHAR(255) DEFAULT NULL,
+  `createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Table for posts (central table for listings)
+CREATE TABLE `posts` (
+  `id` VARCHAR(255) NOT NULL,
+  `title` VARCHAR(255) DEFAULT NULL,
+  `labelCode` VARCHAR(255) DEFAULT NULL,
+  `address` VARCHAR(255) DEFAULT NULL,
+  `attributesId` VARCHAR(255) DEFAULT NULL,
+  `categoryCode` VARCHAR(255) DEFAULT NULL,
+  `priceCode` VARCHAR(255) DEFAULT NULL,
+  `areaCode` VARCHAR(255) DEFAULT NULL,
+  `provinceCode` VARCHAR(255) DEFAULT NULL,
+  `description` TEXT DEFAULT NULL,
+  `userId` VARCHAR(255) DEFAULT NULL,
+  `overviewId` VARCHAR(255) DEFAULT NULL,
+  `imagesId` VARCHAR(255) DEFAULT NULL,
+  `priceNumber` FLOAT DEFAULT NULL,
+  `areaNumber` FLOAT DEFAULT NULL,
+  `status` ENUM('pending','active') DEFAULT 'pending',
+  `createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`labelCode`) REFERENCES `labels` (`code`) ON DELETE SET NULL ON UPDATE CASCADE,
+  FOREIGN KEY (`attributesId`) REFERENCES `attributes` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  FOREIGN KEY (`categoryCode`) REFERENCES `categories` (`code`) ON DELETE SET NULL ON UPDATE CASCADE,
+  FOREIGN KEY (`priceCode`) REFERENCES `prices` (`code`) ON DELETE SET NULL ON UPDATE CASCADE,
+  FOREIGN KEY (`areaCode`) REFERENCES `areas` (`code`) ON DELETE SET NULL ON UPDATE CASCADE,
+  FOREIGN KEY (`provinceCode`) REFERENCES `provinces` (`code`) ON DELETE SET NULL ON UPDATE CASCADE,
+  FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  FOREIGN KEY (`overviewId`) REFERENCES `overviews` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  FOREIGN KEY (`imagesId`) REFERENCES `images` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Table for prices (price ranges or categories)
+CREATE TABLE `prices` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `code` VARCHAR(255) DEFAULT NULL,
+  `value` VARCHAR(255) DEFAULT NULL,
+  `createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_prices_code` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Table for provinces (geographic regions)
+CREATE TABLE `provinces` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `code` VARCHAR(255) DEFAULT NULL,
+  `value` VARCHAR(255) DEFAULT NULL,
+  `createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_provinces_code` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Table for users (account information)
+CREATE TABLE `users` (
+  `id` VARCHAR(255) NOT NULL,
+  `name` VARCHAR(255) DEFAULT NULL,
+  `phone` VARCHAR(255) DEFAULT NULL,
+  `email` VARCHAR(255) DEFAULT NULL,
+  `password` VARCHAR(255) DEFAULT NULL, -- Should be hashed
+  `zalo` VARCHAR(255) DEFAULT NULL,
+  `fbUrl` VARCHAR(255) DEFAULT NULL,
+  `avatar` VARCHAR(255) DEFAULT NULL,
+  `role` ENUM('0','1') DEFAULT '0',
+  `passwordChangedAt` VARCHAR(255) DEFAULT NULL,
+  `passwordResetToken` VARCHAR(255) DEFAULT NULL,
+  `passwordResetExpires` VARCHAR(255) DEFAULT NULL,
+  `createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_users_email` (`email`),
+  UNIQUE KEY `uk_users_phone` (`phone`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

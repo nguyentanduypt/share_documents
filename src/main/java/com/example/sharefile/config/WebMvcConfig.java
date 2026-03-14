@@ -15,7 +15,7 @@ import org.springframework.web.servlet.view.JstlView;
 @EnableWebMvc
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    // ✅ Cấu hình View Resolver cho JSP
+    // Cấu hình View Resolver cho JSP
     @Bean
     public ViewResolver viewResolver() {
         final InternalResourceViewResolver bean = new InternalResourceViewResolver();
@@ -30,7 +30,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.viewResolver(viewResolver());
     }
 
-    // ✅ Cho phép truy cập file tĩnh (CSS, JS, hình ảnh, file upload)
+    // Cho phép truy cập file tĩnh (CSS, JS, hình ảnh, file upload)
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/css/**").addResourceLocations("/resources/css/");
@@ -38,12 +38,16 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/images/**").addResourceLocations("/resources/images/");
         registry.addResourceHandler("/client/**").addResourceLocations("/resources/client/");
 
-        // ✅ Trỏ đúng vào thư mục chứa file upload
+        // Trỏ đúng vào thư mục chứa file upload
         registry.addResourceHandler("/file/**")
                 .addResourceLocations("file:src/main/webapp/resources/file/");
+        // registry.addResourceHandler("/file/**")
+        // .addResourceLocations("file:" + System.getProperty("user.dir") +
+        // "/src/main/webapp/resources/file/");
+
     }
 
-    // ✅ Cấu hình để xử lý multipart/form-data (upload file)
+    // Cấu hình để xử lý multipart/form-data (upload file)
     @Bean
     public StandardServletMultipartResolver multipartResolver() {
         return new StandardServletMultipartResolver();

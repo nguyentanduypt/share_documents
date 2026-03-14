@@ -26,7 +26,7 @@ public class Document {
     @ManyToOne
     @JoinColumn(name = "uploader_id") // cột trong database
     private User uploader;
-    // private String filePath;
+    private String filePath;
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
@@ -39,13 +39,13 @@ public class Document {
         this.category = category;
     }
 
-    // public String getFilePath() {
-    // return filePath;
-    // }
+    public String getFilePath() {
+        return filePath;
+    }
 
-    // public void setFilePath(String filePath) {
-    // this.filePath = filePath;
-    // }
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
 
     @Transient
     private String formattedDate;

@@ -36,7 +36,7 @@
                                             <c:out value="${pageContext.request.userPrincipal.name}" />
                                         </p>
                                     </li>
-                                    <li><a class="dropdown-item" href="/profile">Hồ sơ cá nhân</a></li>
+                                    <!-- <li><a class="dropdown-item" href="/profile">Hồ sơ cá nhân</a></li> -->
                                     <li><a class="dropdown-item" href="/my-files">Tài liệu của tôi</a></li>
                                     <c:if test="${pageContext.request.isUserInRole('ADMIN')}">
                                         <li><a class="dropdown-item" href="/admin">Trang quản trị</a></li>

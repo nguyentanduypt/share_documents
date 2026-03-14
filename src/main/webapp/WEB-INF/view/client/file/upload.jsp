@@ -31,40 +31,49 @@
                 <link href="${pageContext.request.contextPath}/client/css/style.css" rel="stylesheet">
                 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.7.0/mammoth.browser.min.js"></script>
+
                 <script>
                     $(document).ready(function () {
                         const fileInput = $("#fileData");
                         fileInput.change(function (e) {
                             const file = e.target.files[0];
                             const preview = $("#filePreview");
-                            if (!file) {
-                                preview.text("");
-                                return;
-                            }
-                            if (file.type.startsWith("text/")) {
+                            preview.html(""); // xóa nội dung cũ
+
+                            if (!file) return;
+
+                            const fileType = file.type;
+                            const fileName = file.name.toLowerCase();
+
+                            if (fileType.startsWith("text/") || fileName.endsWith(".txt")) {
+                                // ✅ Xem trước file TXT
                                 const reader = new FileReader();
-                                reader.onload = function (event) {
+                                reader.onload = (event) => {
                                     preview.text(event.target.result);
                                 };
                                 reader.readAsText(file);
-                            } else if (file.name.endsWith(".docx")) {
+                            } else if (fileName.endsWith(".pdf")) {
+                                // ✅ Xem trước file PDF
+                                const fileURL = URL.createObjectURL(file);
+                                preview.html(`<iframe src="${fileURL}" width="100%" height="500px"></iframe>`);
+                            } else if (fileName.endsWith(".docx")) {
+                                // ✅ Xem trước file DOCX
                                 const reader = new FileReader();
-                                reader.onload = function (event) {
+                                reader.onload = (event) => {
                                     mammoth.convertToHtml({ arrayBuffer: event.target.result })
-                                        .then(function (resultObject) {
-                                            preview.html(resultObject.value);
-                                        })
-                                        .catch(function () {
-                                            preview.text("Không thể xem trước file docx này.");
-                                        });
+                                        .then(result => preview.html(result.value))
+                                        .catch(() => preview.text("Không thể xem trước file docx này."));
                                 };
                                 reader.readAsArrayBuffer(file);
                             } else {
-                                preview.text("Xem trước chỉ hỗ trợ file .txt, .md, .csv, .docx");
+                                preview.text("Chỉ hỗ trợ xem trước file .txt, .pdf, .docx");
                             }
                         });
                     });
                 </script>
+
+
+
             </head>
 
             <body>
@@ -92,6 +101,7 @@
                                 placeholder="Mô tả ngắn về tài liệu (ví dụ: bài giảng, đề thi, đồ án...)"
                                 rows="3"></textarea>
                         </div>
+
                         <div class="mb-3">
                             <label for="category">Danh mục:</label>
                             <select name="categoryId" class="form-select" required>
@@ -101,18 +111,22 @@
                                 </c:forEach>
                             </select>
                         </div>
+
                         <div class="mb-3">
                             <label for="fileData" class="form-label fw-bold">Chọn file</label>
                             <input type="file" class="form-control" id="fileData" name="fileData" required>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100">Tải lên</button>
+                        <button type="submit" class="btn btn-primary w-100 mb-3">Tải lên</button>
+
                         <div class="mb-3">
                             <label>Xem trước nội dung (nếu là file văn bản):</label>
-                            <pre id="filePreview"
-                                style="white-space: pre-wrap; border: 1px solid #ccc; padding: 10px; height: 500px; overflow:auto;"></pre>
+                            <div id="filePreview"
+                                style="white-space: pre-wrap; border: 1px solid #ccc; padding: 10px; height: 500px; overflow:auto;">
+                            </div>
                         </div>
                     </form>
+
 
                 </div>
 

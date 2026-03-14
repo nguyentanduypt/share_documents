@@ -60,7 +60,8 @@ public class SecurityConfiguration {
         http
                 .authorizeHttpRequests(auth -> auth
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.INCLUDE).permitAll()
-                        .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/images/**", "/client/**")
+                        .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/images/**", "/client/**",
+                                "/file/**", "/document/view/**")
                         .permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
@@ -79,7 +80,9 @@ public class SecurityConfiguration {
                         .invalidSessionUrl("/logout?expired")
                         .maximumSessions(1)
                         .maxSessionsPreventsLogin(false))
-                .exceptionHandling(ex -> ex.accessDeniedPage("/access-denied"));
+                .exceptionHandling(ex -> ex.accessDeniedPage("/access-denied"))
+                .headers(headers -> headers
+                        .frameOptions().sameOrigin()); // <-- quan trọng, cho phép iframe cùng origin
 
         return http.build();
     }

@@ -24,8 +24,7 @@ public class DocumentService {
     @Autowired
     private DocumentRepository documentRepository;
 
-    // 🔹 Cấu hình thư mục upload cố định trong project (tên trùng với cấu hình
-    // trong WebMvcConfig)
+    // Cấu hình thư mục upload cố định trong project (tên trùng với cấu hình
     @Value("${file.upload-dir:src/main/webapp/resources/file/}")
     private String uploadDir;
 
@@ -33,7 +32,7 @@ public class DocumentService {
             throws Exception {
         String fileName = file.getOriginalFilename();
 
-        // ✅ Lấy đường dẫn tuyệt đối để lưu file
+        // Lấy đường dẫn tuyệt đối để lưu file
         File uploadFolder = new File(uploadDir);
         if (!uploadFolder.exists()) {
             uploadFolder.mkdirs();
@@ -42,7 +41,7 @@ public class DocumentService {
         Path filePath = Paths.get(uploadFolder.getAbsolutePath(), fileName);
         file.transferTo(filePath.toFile());
 
-        // ✅ Lưu thông tin file vào DB
+        // Lưu thông tin file vào DB
         Document newFile = new Document();
         newFile.setTitle(title);
         newFile.setDescription(description);
@@ -51,6 +50,7 @@ public class DocumentService {
         newFile.setUploadDate(LocalDateTime.now());
         newFile.setUploader(uploader);
         newFile.setCategory(category);
+        newFile.setFilePath(filePath.toString());
 
         return documentRepository.save(newFile);
     }
